@@ -1,0 +1,5 @@
+numpy
+boto3
+scikit_image
+botocore
+scipy
