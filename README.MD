@@ -15,4 +15,11 @@ bsds = BSDS500(
 
 fileids,contours,segments,images = bsds.get_train()
 
+print(len(fileids), contours.shape, segments.shape, images.shape, sep='\n')
+
+#1087
+#(1087, 256, 256, 1)
+#(1087, 256, 256, 1)
+#(1087, 256, 256, 3)
+
 ```
