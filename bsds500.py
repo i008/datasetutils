@@ -35,13 +35,16 @@ def list_files(base_path, validExts=(".jpg", ".jpeg", ".png", ".bmp"), contains=
 class BSDS500(object):
     BUCKET = 'i008data'
     FN = 'BSR_bsds500.tgz'
-    STORE_FN = 'BSR.tgz'
+    STORE_FN = os.path.join(os.environ['HOME'], 'BSR.tgz')
+    HOME = os.environ['HOME']
 
     def __init__(self, path_to_bsds=None, images_to_gray=False, target_size=None, masks_to_binary=True):
         if not path_to_bsds:
             self.BSDS_BASE = self.get_bsds()
         else:
             self.BSDS_BASE = path_to_bsds
+            
+        print(self.BSDS_BASE)
 
         self.images_to_gray = images_to_gray
         self.target_size = target_size
@@ -55,16 +58,18 @@ class BSDS500(object):
         self.GROUND_TRUTH_VALID = os.path.join(self.BSDS_BASE, 'BSDS500/data/groundTruth/val/')
 
     def get_bsds(self):
-        if not pathlib.Path('BSR.tgz').exists():
+        if not pathlib.Path(self.STORE_FN).exists():
             print("DOWNLOADING BSDS500 DATA BE PATIENT")
             s3_resource = boto3.resource('s3')
             s3_resource.meta.client.meta.events.register('choose-signer.s3.*', disable_signing)
             bucket = s3_resource.Bucket(self.BUCKET)
             bucket.download_file(self.FN, self.STORE_FN)
-
-        if not pathlib.Path('BSR').is_dir():
+            
+        ds_dir = self.STORE_FN.split('.')[0]
+        
+        if not pathlib.Path(ds_dir).is_dir():
             tar = tarfile.open(self.STORE_FN)
-            tar.extractall()
+            tar.extractall(self.HOME)
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
         return os.path.join(dir_path, self.STORE_FN.split('.')[0])
